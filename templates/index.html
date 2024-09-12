@@ -33,34 +33,60 @@
     </head>
     <body class="container bg-light">
         <div
-            class="d-flex flex-column justify-content-center align-items-center vh-100"
+            class="d-flex flex-column justify-content-between align-items-center vh-100"
         >
-            <div
-                class="d-flex flex-column justify-content-center align-items-center pb-2"
+            <header></header>
+            <main
+                class="d-flex flex-column justify-content-center align-items-center align-self-stretch gap-2"
             >
-                <h1 class="fs-3 fw-light text-center">
-                    It's like
-                    <a
-                        class="link-secondary text-decoration-none link-offset-2"
-                        href="www.surf-forecast.com"
-                    >
-                        surf-forecast.com
-                    </a>
-                    but
-                    <span class="fw-semibold fst-italic">lighter</span>
-                </h1>
-            </div>
-            <div class="row align-self-stretch">
+                <div
+                    class="d-flex flex-column justify-content-center align-items-center"
+                >
+                    <h1 class="fs-3 fw-light text-center">
+                        It's like
+                        <a
+                            class="link-primary link-offset-1"
+                            href="https://www.surf-forecast.com"
+                            >surf-forecast.com</a
+                        >
+                        but
+                        <span class="fw-semibold fst-italic">lighter</span>
+                    </h1>
+                </div>
+                <div class="row align-self-stretch">
+                    <div class="col"></div>
+                    <div class="col col-10 col-md-8 col-lg-5">
+                        <input
+                            id="search-bar"
+                            class="form-control form-control-lg fw-light"
+                            type="search"
+                            placeholder="Start typing to find surf spots"
+                        />
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </main>
+            <footer class="row align-self-stretch">
                 <div class="col"></div>
-                <div class="col col-10 col-md-8 col-lg-5">
-                    <input
-                        class="form-control form-control-lg fw-light"
-                        type="search"
-                        placeholder="Type here to find surf spots..."
-                    />
+                <div class="col col-10 col-md-12 col-lg-5 pb-3">
+                    <p class="text-secondary fw-light text-center opacity-50">
+                        <small>
+                            The location and forecast data is obtained from
+                            <a
+                                class="link-secondary text-decoration-none link-offset-1 fw-medium text-nowrap"
+                                href="https://www.surf-forecast.com"
+                                >www.surf-forecast.com</a
+                            >
+                            via web scraping, it belongs to its original
+                            creators, and full credit is given to them.
+                        </small>
+                    </p>
                 </div>
                 <div class="col"></div>
-            </div>
+            </footer>
         </div>
+        <script>
+            document.getElementById("search-bar").focus();
+        </script>
     </body>
 </html>
