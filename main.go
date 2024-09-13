@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ztimes2/surf-forecast/internal/httphandler"
+	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
 )
 
 //go:embed templates
@@ -17,7 +18,9 @@ func main() {
 		panic(err)
 	}
 
-	h := httphandler.New(tpl)
+	scraper := meteo365surf.NewScraper()
+
+	h := httphandler.New(tpl, scraper)
 
 	err = http.ListenAndServe(":8080", h)
 	if err != nil {
