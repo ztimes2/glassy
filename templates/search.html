@@ -18,10 +18,10 @@
                 }
             }
 
-            #search-results > .list-group-item {
+            #search-results > * .list-group-item {
                 background-color: transparent !important;
             }
-            #search-results > .list-group-item:hover {
+            #search-results > * .list-group-item:hover {
                 background-color: var(--bs-gray-200) !important;
             }
         </style>
@@ -44,23 +44,38 @@
                 <div class="row align-self-stretch">
                     <div class="col"></div>
                     <div class="col col-10 col-md-8 col-lg-5">
-                        <!-- TODO the following input should send search requests and update #search-results element each type the user types -->
-                        <input id="search-bar" class="form-control form-control-lg fw-light" type="search" placeholder="Start typing to find surf spots" value="{{ .SearchQuery }}"/>
+                        <input 
+                            id="search-bar" 
+                            class="form-control form-control-lg fw-light" 
+                            type="search" 
+                            placeholder="Start typing to find surf spots" 
+                            value="{{ .SearchQuery }}"
+                            hx-get="/search"
+                            name="q"
+                            hx-select="#search-results"
+                            hx-trigger="input changed"
+                            hx-target="#search-results"
+                            hx-swap="outerHTML"
+                        />
                     </div>
                     <div class="col"></div>
                 </div>
-                {{ if gt (len .Breaks) 0 }}
-                <div class="row align-self-stretch">
+                <div id="search-results" class="row align-self-stretch">
+                    {{ if gt (len .Breaks) 0 }}
                     <div class="col"></div>
-                    <div id="search-results" class="col col-10 col-md-8 col-lg-5 px-3 pt-2 list-group list-group-flush">
+                    <div class="col col-10 col-md-8 col-lg-5 px-3 pt-2 list-group list-group-flush">
                     {{ range $b := .Breaks }}
                         <!-- TODO the following link should redirect to the given surf spot's page -->
-                        <a href="" class="list-group-item list-group-item-action py-2">{{ $b.Name }}</a>
+                        <a href="" class="list-group-item list-group-item-action py-2">
+                            <h6 class="mb-0 fs-6">{{ $b.Name }}</h6>
+                            <small class="opacity-75">{{ $b.CountryName }}</small>
+                        </a>
+
                     {{ end }}
-                    </div>
+                    </div> 
                     <div class="col"></div>
+                    {{ end }}
                 </div>
-                {{ end }}
             </main>
             <footer class="row align-self-stretch">
                 <div class="col"></div>
@@ -78,7 +93,7 @@
         </div>
         <script>
         {{/* Search bar should be focused only when search query is not empty. */}}
-        {{  if eq .SearchQuery "" }}
+        {{ if eq .SearchQuery "" }}
             document.getElementById("search-bar").focus();
         {{ end }}
         </script>
