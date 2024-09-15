@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/ztimes2/surf-forecast/internal/htmlutil"
 	"golang.org/x/net/html"
@@ -99,9 +100,40 @@ type Break struct {
 	CountryName string
 }
 
-// Break returns a surf break by its name. It returns ErrBreakNotFound for non-existent surf breaks.
-func (s *Scraper) Break(name string) (Break, error) {
-	path := "/breaks/" + name
+// BreakSlug returns a surf break's slug by its name. It returns ErrBreakNotFound for non-existent surf breaks.
+func (s *Scraper) BreakSlug(name string) (string, error) {
+	resp, err := s.client.PostForm(s.baseURL+"/breaks/catch", url.Values{
+		"query": []string{name},
+	})
+	if err != nil {
+		return "", fmt.Errorf("could not send request: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusFound {
+		return "", fmt.Errorf("received response with %d status code", resp.StatusCode)
+	}
+
+	redirectURL, err := url.Parse(resp.Header.Get("Location"))
+	if err != nil {
+		return "", fmt.Errorf("could not parse redirect url: %w", err)
+	}
+
+	path, ok := strings.CutPrefix(redirectURL.Path, "/breaks/")
+	if !ok {
+		return "", ErrBreakNotFound
+	}
+
+	parts := strings.Split(path, "/forecasts")
+	if len(parts) != 2 {
+		return "", errors.New("unexpected redirect url format")
+	}
+
+	return parts[0], nil
+}
+
+// Break returns a surf break by its slug. It returns ErrBreakNotFound for non-existent surf breaks.
+func (s *Scraper) Break(slug string) (Break, error) {
+	path := "/breaks/" + slug
 
 	req, err := http.NewRequest(http.MethodGet, s.baseURL+path, nil)
 	if err != nil {
@@ -126,12 +158,12 @@ func (s *Scraper) Break(name string) (Break, error) {
 		return Break{}, fmt.Errorf("could not parse response body as html: %w", err)
 	}
 
-	brk, err := scrapeSurfBreak(node)
+	b, err := scrapeSurfBreak(node)
 	if err != nil {
 		return Break{}, fmt.Errorf("could not scrape surf break: %w", err)
 	}
 
-	return brk, nil
+	return b, nil
 }
 
 func scrapeSurfBreak(n *html.Node) (Break, error) {

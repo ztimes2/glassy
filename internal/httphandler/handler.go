@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"errors"
 	"html/template"
 	"net/http"
 	"strings"
@@ -14,6 +15,7 @@ func New(tpl *template.Template, scraper *meteo365surf.Scraper) http.Handler {
 
 	mux.HandleFunc("GET /", handleIndex())
 	mux.HandleFunc("GET /search", handleSearch(tpl, scraper))
+	mux.HandleFunc("GET /spots/{name}", handleSpot(tpl, scraper))
 
 	return mux
 }
@@ -55,5 +57,43 @@ func handleSearch(tpl *template.Template, scraper *meteo365surf.Scraper) http.Ha
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// TODO add caching
+	}
+}
+
+func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimSpace(r.PathValue("name"))
+
+		slug, err := scraper.BreakSlug(name)
+		if err != nil {
+			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
+				http.NotFound(w, r)
+				return
+			}
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		b, err := scraper.Break(slug)
+		if err != nil {
+			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
+				http.NotFound(w, r)
+				return
+			}
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = tpl.ExecuteTemplate(w, "spot.html", b)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// TODO add caching
 	}
 }

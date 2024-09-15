@@ -65,8 +65,7 @@
                     <div class="col"></div>
                     <div class="col col-10 col-md-8 col-lg-5 px-3 pt-2 list-group list-group-flush">
                     {{ range $b := .Breaks }}
-                        <!-- TODO the following link should redirect to the given surf spot's page -->
-                        <a href="" class="list-group-item list-group-item-action py-2">
+                        <a href="/spots/{{ $b.Name }}" class="list-group-item list-group-item-action py-2">
                             <h6 class="mb-0 fs-6">{{ $b.Name }}</h6>
                             <small class="opacity-75">{{ $b.CountryName }}</small>
                         </a>

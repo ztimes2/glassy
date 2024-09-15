@@ -23,6 +23,11 @@ func NewScraper() *Scraper {
 		baseURL: defaultBaseURL,
 		client: &http.Client{
 			Timeout: defaultTimeout,
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				// This prevents from automatically following redirects because the BreakSlug method
+				// relies on redirect response which need to be intercepted.
+				return http.ErrUseLastResponse
+			},
 		},
 	}
 }
