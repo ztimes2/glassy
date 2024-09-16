@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"bytes"
 	"errors"
 	"html/template"
 	"net/http"
@@ -52,11 +53,15 @@ func handleSearch(tpl *template.Template, scraper *meteo365surf.Scraper) http.Ha
 			data.Breaks = breaks
 		}
 
-		err := tpl.ExecuteTemplate(w, "search.html", data)
+		buf := new(bytes.Buffer)
+
+		err := tpl.ExecuteTemplate(buf, "search.html", data)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		_, _ = w.Write(buf.Bytes())
 
 		// TODO add caching
 	}
@@ -88,11 +93,15 @@ func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.Hand
 			return
 		}
 
-		err = tpl.ExecuteTemplate(w, "spot.html", b)
+		buf := new(bytes.Buffer)
+
+		err = tpl.ExecuteTemplate(buf, "search.html", b)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		_, _ = w.Write(buf.Bytes())
 
 		// TODO add caching
 	}
