@@ -35,27 +35,27 @@ func handleIndex() http.HandlerFunc {
 
 func handleSearch(tpl *template.Template, scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var data struct {
+		var templateData struct {
 			SearchQuery string
 			Breaks      []meteo365surf.Break
 		}
 
 		urlQuery := r.URL.Query()
 
-		data.SearchQuery = strings.TrimSpace(urlQuery.Get("q"))
-		if data.SearchQuery != "" {
-			breaks, err := scraper.SearchBreaks(data.SearchQuery)
+		templateData.SearchQuery = strings.TrimSpace(urlQuery.Get("q"))
+		if templateData.SearchQuery != "" {
+			breaks, err := scraper.SearchBreaks(templateData.SearchQuery)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			data.Breaks = breaks
+			templateData.Breaks = breaks
 		}
 
 		buf := new(bytes.Buffer)
 
-		err := tpl.ExecuteTemplate(buf, "search.html", data)
+		err := tpl.ExecuteTemplate(buf, "search.html", templateData)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -69,6 +69,11 @@ func handleSearch(tpl *template.Template, scraper *meteo365surf.Scraper) http.Ha
 
 func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var templateData struct {
+			Break    meteo365surf.Break
+			Forecast *meteo365surf.Forecast
+		}
+
 		name := strings.TrimSpace(r.PathValue("name"))
 
 		slug, err := scraper.BreakSlug(name)
@@ -82,7 +87,18 @@ func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.Hand
 			return
 		}
 
-		b, err := scraper.Break(slug)
+		templateData.Break, err = scraper.Break(slug)
+		if err != nil {
+			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
+				http.NotFound(w, r)
+				return
+			}
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		templateData.Forecast, err = scraper.LatestForecast(slug)
 		if err != nil {
 			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
 				http.NotFound(w, r)
@@ -95,7 +111,7 @@ func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.Hand
 
 		buf := new(bytes.Buffer)
 
-		err = tpl.ExecuteTemplate(buf, "search.html", b)
+		err = tpl.ExecuteTemplate(buf, "spot.html", templateData)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

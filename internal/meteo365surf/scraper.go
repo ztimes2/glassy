@@ -3,6 +3,8 @@ package meteo365surf
 import (
 	"net/http"
 	"time"
+
+	"github.com/tkuchiki/go-timezone"
 )
 
 const (
@@ -13,8 +15,9 @@ const (
 // Scraper is a web scraper that sends requests to www.surf-forecast.com and scrapes
 // data from its responses.
 type Scraper struct {
-	baseURL string
-	client  *http.Client
+	baseURL  string
+	client   *http.Client
+	timezone *timezone.Timezone
 }
 
 // NewScraper initializes a new Scraper.
@@ -29,5 +32,6 @@ func NewScraper() *Scraper {
 				return http.ErrUseLastResponse
 			},
 		},
+		timezone: timezone.New(),
 	}
 }
