@@ -36,8 +36,8 @@
                     <h1 class="fs-3 fw-normal text-center mb-1">{{ .Break.Name }}</h1>
                     <h2 class="fs-6 fw-light opacity-75">{{ .Break.CountryName }}</h2>
                     {{ range $i, $df := .ForecastIssue.Daily }}
-                    <h3 class="fs-5 align-self-stretch mt-3">
-                        <span class="fw-semibold me-1">
+                    <h3 class="fs-5 align-self-stretch mt-4 mb-0">
+                        <span class="fw-medium me-1">
                         {{ if eq $i 0 }}
                             Today
                         {{ else if eq $i 1 }}
@@ -52,22 +52,43 @@
                         <thead>
                           <tr>
                             <th class="fw-light bg-transparent border-0 opacity-50" scope="col"></th>
-                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col">Swell</th>
-                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col">Wind</th>
+                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col"><small>Swell</small></th>
+                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col"><small>Wind</small></th>
                           </tr>
                         </thead>
                         <tbody>
                         {{ range $j, $hf := $df.Hourly }}
                           <tr>
-                            <th class="fw-light bg-transparent border-0 opacity-50" scope="row">{{ $hf.Timestamp.Format "3 PM" }}</th>
+                            <th class="fw-light bg-transparent border-0 opacity-50 text-end py-3 px-0" scope="row"><small>{{ $hf.Timestamp.Format "3 pm" }}</small></th>
                             <td class="
-                                {{ if eq $j 0 }} border-bottom-0 border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1)}} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom-0 {{ end }}
-                                "
-                            >{{ $hf.Swells.Primary.WaveHeightInMeters }}m - {{ $hf.Swells.Primary.PeriodInSeconds }}s - {{ $hf.WaveEnergyInKiloJoules }}kJ</td>
+                                {{ if and (eq $j 0) (eq $j (sub (len $df.Hourly) 1)) }} border-bottom border-top rounded-top-3 rounded-bottom-3 {{ else if eq $j 0 }} border-bottom border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1) }} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom {{ end }}
+                                p-3 text-center"
+                            >
+                                <div class="row">
+                                    <div class="col text-nowrap">
+                                        {{ $hf.Swells.Primary.WaveHeightInMeters }}<small class="fw-light"> m</small>
+                                    </div>
+                                    <div class="col text-nowrap">
+                                        {{ $hf.Swells.Primary.PeriodInSeconds }}<small class="fw-light"> s</small>
+                                    </div>
+                                    <div class="col text-nowrap">
+                                        {{ $hf.WaveEnergyInKiloJoules }}<small class="fw-light"> kJ</small>
+                                    </div>
+                                </div>
+                            </td>
                             <td class="
-                                {{ if eq $j 0 }} border-bottom-0 border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1)}} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom-0 {{ end }}
-                                "
-                            >{{ $hf.Wind.SpeedInKilometersPerHour }}km/h - {{ $hf.Wind.State }}</td>
+                            {{ if and (eq $j 0) (eq $j (sub (len $df.Hourly) 1)) }} border-bottom border-top rounded-top-3 rounded-bottom-3 {{ else if eq $j 0 }} border-bottom border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1) }} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom {{ end }}
+                                p-3 text-center"
+                            >
+                                <div class="row">
+                                    <div class="col text-nowrap">
+                                        {{ $hf.Wind.SpeedInKilometersPerHour }}<small class="fw-light"> km/h</small>
+                                    </div>
+                                    <div class="col text-nowrap">
+                                        {{ $hf.Wind.State }}
+                                    </div>
+                                </div>
+                            </td>
                           </tr>
                         {{ end }}
                         </tbody>
