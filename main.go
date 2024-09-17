@@ -13,7 +13,13 @@ import (
 var fs embed.FS
 
 func main() {
-	tpl, err := template.ParseFS(fs, "templates/*.html")
+	tpl, err := template.New("").
+		Funcs(template.FuncMap{
+			"sub": func(a, b int) int {
+				return a - b
+			},
+		}).
+		ParseFS(fs, "templates/*.html")
 	if err != nil {
 		panic(err)
 	}

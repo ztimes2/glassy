@@ -70,8 +70,8 @@ func handleSearch(tpl *template.Template, scraper *meteo365surf.Scraper) http.Ha
 func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var templateData struct {
-			Break    meteo365surf.Break
-			Forecast *meteo365surf.Forecast
+			Break         meteo365surf.Break
+			ForecastIssue *meteo365surf.ForecastIssue
 		}
 
 		name := strings.TrimSpace(r.PathValue("name"))
@@ -98,7 +98,7 @@ func handleSpot(tpl *template.Template, scraper *meteo365surf.Scraper) http.Hand
 			return
 		}
 
-		templateData.Forecast, err = scraper.LatestForecast(slug)
+		templateData.ForecastIssue, err = scraper.LatestForecastIssue(slug)
 		if err != nil {
 			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
 				http.NotFound(w, r)

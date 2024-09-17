@@ -18,6 +18,11 @@
                     height: -webkit-fill-available !important;
                 }
             }
+
+            table {
+                border-collapse: separate; 
+                border-spacing: 10px 0px;
+            }
         </style>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -28,11 +33,46 @@
             <header></header>
             <main class="d-flex flex-column justify-content-center align-items-center align-self-stretch gap-2">
                 <div class="d-flex flex-column justify-content-center align-items-center">
-                    <h1 class="fw-normal text-center">{{ .Break.Name }}</h1>
-                    <h2 class="fs-5 fw-light text-center opacity-75">
-                        This page is under construction... 🔨
-                    </h2>
-                    {{ .Forecast.IssuedAt }}
+                    <h1 class="fs-3 fw-normal text-center mb-1">{{ .Break.Name }}</h1>
+                    <h2 class="fs-6 fw-light opacity-75">{{ .Break.CountryName }}</h2>
+                    {{ range $i, $df := .ForecastIssue.Daily }}
+                    <h3 class="fs-5 align-self-stretch mt-3">
+                        <span class="fw-semibold me-1">
+                        {{ if eq $i 0 }}
+                            Today
+                        {{ else if eq $i 1 }}
+                            Tomorrow
+                        {{ else }}
+                            {{ $df.Timestamp.Format "Monday" }}
+                        {{ end }}
+                        </span>
+                        <span class="fw-light">{{ $df.Timestamp.Format "2 Jan" }}</span>
+                    </h3>
+                    <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="fw-light bg-transparent border-0 opacity-50" scope="col"></th>
+                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col">Swell</th>
+                            <th class="fw-light bg-transparent border-0 opacity-50 text-center" scope="col">Wind</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $j, $hf := $df.Hourly }}
+                          <tr>
+                            <th class="fw-light bg-transparent border-0 opacity-50" scope="row">{{ $hf.Timestamp.Format "3 PM" }}</th>
+                            <td class="
+                                {{ if eq $j 0 }} border-bottom-0 border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1)}} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom-0 {{ end }}
+                                "
+                            >{{ $hf.Swells.Primary.WaveHeightInMeters }}m - {{ $hf.Swells.Primary.PeriodInSeconds }}s - {{ $hf.WaveEnergyInKiloJoules }}kJ</td>
+                            <td class="
+                                {{ if eq $j 0 }} border-bottom-0 border-top rounded-top-3 {{ else if eq $j (sub (len $df.Hourly) 1)}} border-top-0 border-bottom rounded-bottom-3 {{ else }} border-top-0 border-bottom-0 {{ end }}
+                                "
+                            >{{ $hf.Wind.SpeedInKilometersPerHour }}km/h - {{ $hf.Wind.State }}</td>
+                          </tr>
+                        {{ end }}
+                        </tbody>
+                      </table>
+                    {{ end }}
                 </div>
             </main>
             <footer class="row align-self-stretch">

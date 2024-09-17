@@ -14,10 +14,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-// LatestForecast returns the given surf break's latest forecast by its slug for 8 or 9 subsequent
-// days. The returned forecast's timestamps use the given surf break's local timezone. It returns
-// ErrBreakNotFound for non-existent surf breaks.
-func (s *Scraper) LatestForecast(slug string) (*Forecast, error) {
+// LatestForecastIssue returns latest forecast issue for a surf break by its slug for 8 or 9
+// subsequent days. The returned forecast's timestamps use the surf break's local timezone.
+// It returns ErrBreakNotFound for non-existent surf breaks.
+func (s *Scraper) LatestForecastIssue(slug string) (*ForecastIssue, error) {
 	path := "/breaks/" + slug + "/forecasts/latest"
 
 	req, err := http.NewRequest(http.MethodGet, s.baseURL+path, nil)
@@ -51,16 +51,16 @@ func (s *Scraper) LatestForecast(slug string) (*Forecast, error) {
 	return forecast, nil
 }
 
-// Forecast holds a forecast for multiple days.
-type Forecast struct {
+// ForecastIssue holds a forecast issue for multiple days.
+type ForecastIssue struct {
 	// IssuedAt holds a timestamp of when the given forecast was issued by www.surf-forecast.com
 	// using the surf break's local timezone.
 	IssuedAt time.Time
 	Daily    []*DailyForecast
 }
 
-// newForecast combines the scraped forecast data into Forecast.
-func newForecast(
+// newForecastIssue combines the scraped forecast data into ForecastIssue.
+func newForecastIssue(
 	issuedAt time.Time,
 	days []int,
 	hours [][]int,
@@ -69,7 +69,7 @@ func newForecast(
 	waveEnergies [][]float64,
 	winds [][]wind,
 	windStates [][]string,
-) (*Forecast, error) {
+) (*ForecastIssue, error) {
 
 	if len(days) != len(hours) {
 		return nil, errors.New("days and hours must have equal number of elements")
@@ -133,7 +133,7 @@ func newForecast(
 		previous = f
 	}
 
-	return &Forecast{
+	return &ForecastIssue{
 		IssuedAt: issuedAt,
 		Daily:    forecasts,
 	}, nil
@@ -232,7 +232,7 @@ type Wind struct {
 	State                        string
 }
 
-func scrapeForecast(n *html.Node, tz *timezone.Timezone) (*Forecast, error) {
+func scrapeForecast(n *html.Node, tz *timezone.Timezone) (*ForecastIssue, error) {
 	issuedAt, err := scrapeIssueTimestamp(n, tz)
 	if err != nil {
 		return nil, fmt.Errorf("could not scrape issue date: %w", err)
@@ -278,7 +278,7 @@ func scrapeForecast(n *html.Node, tz *timezone.Timezone) (*Forecast, error) {
 		return nil, fmt.Errorf("could not scrape wind states: %w", err)
 	}
 
-	return newForecast(
+	return newForecastIssue(
 		issuedAt,
 		days,
 		hours,
