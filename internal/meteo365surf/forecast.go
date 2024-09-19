@@ -291,12 +291,12 @@ func scrapeForecast(n *html.Node, tz *timezone.Timezone) (*ForecastIssue, error)
 }
 
 func scrapeIssueTimestamp(n *html.Node, tz *timezone.Timezone) (time.Time, error) {
-	issueNode, ok := htmlutil.FindOne(n, htmlutil.WithClassEqual("break-header__issued"))
+	issueNode, ok := htmlutil.FindOne(n, htmlutil.WithClassEqual("break-header-dynamic__issued"))
 	if !ok {
 		return time.Time{}, errors.New("could not find issue node")
 	}
 
-	issueTextNode := issueNode.FirstChild
+	issueTextNode := issueNode.LastChild
 	if issueTextNode == nil {
 		return time.Time{}, errors.New("could not find issue text node")
 	}
