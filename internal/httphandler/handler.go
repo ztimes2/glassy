@@ -105,7 +105,7 @@ func handleSpot(scraper *meteo365surf.Scraper) http.HandlerFunc {
 
 		buf := new(bytes.Buffer)
 
-		err = ui.SpotPage(props).Render(w)
+		err = ui.SpotPage(props).Render(buf)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
