@@ -72,14 +72,14 @@ func SpotPage(props SpotPageProps) Node {
 							Text(props.Break.Name),
 						),
 						H2(
-							Class("fs-6 fw-light opacity-75 m-0"),
+							Class("fs-6 fw-light opacity-75 mb-3"),
 							Text(props.Break.CountryName),
 						),
 						Div(
 							mapIndex(props.ForecastIssue.Daily, func(i int, df *meteo365surf.DailyForecast) Node {
 								return Group([]Node{
 									H3(
-										Class("fs-5 align-self-stretch mt-5 mb-0"),
+										Class("fs-5 align-self-stretch mb-0 border-top pt-2 px-1"),
 										Span(
 											Class("fw-medium me-1"),
 											Text(props.forecastWeekday(i)),
@@ -90,6 +90,7 @@ func SpotPage(props SpotPageProps) Node {
 										),
 									),
 									Div(
+										Class("px-1 mb-4"),
 										Style("margin: 0px -10px;"),
 										Table(
 											Class("table table-bordered"),
