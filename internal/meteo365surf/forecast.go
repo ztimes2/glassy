@@ -651,14 +651,14 @@ func scrapeSwells(n *html.Node) ([][]Swells, error) {
 				return fmt.Errorf("could not scrape hourly swells: %w", err)
 			}
 
-			if len(hourlySwells) == 0 {
-				return fmt.Errorf("no swells")
+			var s Swells
+			if len(hourlySwells) > 0 {
+				s = Swells{
+					Primary:   hourlySwells[0],
+					Secondary: hourlySwells[1:],
+				}
 			}
-
-			swells = append(swells, Swells{
-				Primary:   hourlySwells[0],
-				Secondary: hourlySwells[1:],
-			})
+			swells = append(swells, s)
 
 			isDayEnd := htmlutil.ClassContains(n, "is-day-end")
 			if isDayEnd {
