@@ -8,11 +8,7 @@ import (
 	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
 )
 
-type SearchPageProps struct {
-	SearchQuery string
-	Breaks      []meteo365surf.Break
-}
-
+// SearchPage returns a Node that renders the search page.
 func SearchPage(props SearchPageProps) Node {
 	return HTML5(HTML5Props{
 		Title:       "Lighter surf forecasts",
@@ -32,7 +28,7 @@ func SearchPage(props SearchPageProps) Node {
 						height: -webkit-fill-available !important;
 					}
 				}
-					
+
 				#search-results > * .list-group-item {
 					background-color: transparent !important;
 				}
@@ -116,26 +112,7 @@ func SearchPage(props SearchPageProps) Node {
 						),
 					),
 				),
-				Footer(
-					Class("row align-self-stretch"),
-					Div(Class("col")),
-					Div(
-						Class("col col-10 col-md-12 col-lg-5 py-3"),
-						P(
-							Class("text-secondary fw-light text-center opacity-50"),
-							Small(
-								Text("The location and forecast data is obtained from "),
-								A(
-									Class("link-secondary text-decoration-none link-offset-1 fw-medium text-nowrap"),
-									Href("https://www.surf-forecast.com"),
-									Text("www.surf-forecast.com"),
-								),
-								Text(" via web scraping, it belongs to its original creators, and full credit is given to them."),
-							),
-						),
-					),
-					Div(Class("col")),
-				),
+				footer(),
 			),
 			Script(
 				If(
@@ -145,4 +122,10 @@ func SearchPage(props SearchPageProps) Node {
 			),
 		},
 	})
+}
+
+// SearchPageProps holds data needed for rendering the search page.
+type SearchPageProps struct {
+	SearchQuery string
+	Breaks      []meteo365surf.Break
 }

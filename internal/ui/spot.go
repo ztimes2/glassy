@@ -9,29 +9,7 @@ import (
 	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
 )
 
-type SpotPageProps struct {
-	Break         meteo365surf.Break
-	ForecastIssue *meteo365surf.ForecastIssue
-}
-
-func (p SpotPageProps) forecastWeekday(i int) string {
-	if i == 0 {
-		return "Today"
-	}
-	if i == 1 {
-		return "Tomorrow"
-	}
-	return p.ForecastIssue.Daily[i].Timestamp.Format("Monday")
-}
-
-func (p SpotPageProps) forecastDate(i int) string {
-	return p.ForecastIssue.Daily[i].Timestamp.Format("2 Jan")
-}
-
-func (p SpotPageProps) forecastHour(i, j int) string {
-	return p.ForecastIssue.Daily[i].Hourly[j].Timestamp.Format("3 pm")
-}
-
+// SpotPage returns a Node that renders the spot page.
 func SpotPage(props SpotPageProps) Node {
 	return HTML5(HTML5Props{
 		Title:       props.Break.Name + " - Lighter surf forecasts",
@@ -190,27 +168,35 @@ func SpotPage(props SpotPageProps) Node {
 						),
 					),
 				),
-				Footer(
-					Class("row align-self-stretch"),
-					Div(Class("col")),
-					Div(
-						Class("col col-10 col-md-12 col-lg-5 py-3"),
-						P(
-							Class("text-secondary fw-light text-center opacity-50"),
-							Small(
-								Text("The location and forecast data is obtained from "),
-								A(
-									Class("link-secondary text-decoration-none link-offset-1 fw-medium text-nowrap"),
-									Href("https://www.surf-forecast.com"),
-									Text("www.surf-forecast.com"),
-								),
-								Text(" via web scraping, it belongs to its original creators, and full credit is given to them."),
-							),
-						),
-					),
-					Div(Class("col")),
-				),
+				footer(),
 			),
 		},
 	})
+}
+
+// SpotPageProps holds data needed for rendering the spot page.
+type SpotPageProps struct {
+	Break         meteo365surf.Break
+	ForecastIssue *meteo365surf.ForecastIssue
+}
+
+// forecastWeekday returns a textual representation of a weekday by a daily forecast index.
+func (p SpotPageProps) forecastWeekday(i int) string {
+	if i == 0 {
+		return "Today"
+	}
+	if i == 1 {
+		return "Tomorrow"
+	}
+	return p.ForecastIssue.Daily[i].Timestamp.Format("Monday")
+}
+
+// forecastDate returns a textual representation of a date by a daily forecast index.
+func (p SpotPageProps) forecastDate(i int) string {
+	return p.ForecastIssue.Daily[i].Timestamp.Format("2 Jan")
+}
+
+// forecastHour returns a textual representation of an hour by indexes of daily and hourly forecasts respectively.
+func (p SpotPageProps) forecastHour(i, j int) string {
+	return p.ForecastIssue.Daily[i].Hourly[j].Timestamp.Format("3 pm")
 }
