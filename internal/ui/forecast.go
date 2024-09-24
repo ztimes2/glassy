@@ -9,8 +9,8 @@ import (
 	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
 )
 
-// SpotPage returns a Node that renders the spot page.
-func SpotPage(props SpotPageProps) Node {
+// ForecastPage returns a Node that renders the forecast page.
+func ForecastPage(props ForecastPageProps) Node {
 	return HTML5(HTML5Props{
 		Title:       props.Break.Name + " - Lighter surf forecasts",
 		Description: "It's like www.surf-forecast.com but lighter.",
@@ -174,14 +174,14 @@ func SpotPage(props SpotPageProps) Node {
 	})
 }
 
-// SpotPageProps holds data needed for rendering the spot page.
-type SpotPageProps struct {
+// ForecastPageProps holds data needed for rendering the forecast page.
+type ForecastPageProps struct {
 	Break         meteo365surf.Break
 	ForecastIssue *meteo365surf.ForecastIssue
 }
 
 // forecastWeekday returns a textual representation of a weekday by a daily forecast index.
-func (p SpotPageProps) forecastWeekday(i int) string {
+func (p ForecastPageProps) forecastWeekday(i int) string {
 	if i == 0 {
 		return "Today"
 	}
@@ -192,11 +192,11 @@ func (p SpotPageProps) forecastWeekday(i int) string {
 }
 
 // forecastDate returns a textual representation of a date by a daily forecast index.
-func (p SpotPageProps) forecastDate(i int) string {
+func (p ForecastPageProps) forecastDate(i int) string {
 	return p.ForecastIssue.Daily[i].Timestamp.Format("2 Jan")
 }
 
 // forecastHour returns a textual representation of an hour by indexes of daily and hourly forecasts respectively.
-func (p SpotPageProps) forecastHour(i, j int) string {
+func (p ForecastPageProps) forecastHour(i, j int) string {
 	return p.ForecastIssue.Daily[i].Hourly[j].Timestamp.Format("3 pm")
 }

@@ -16,7 +16,7 @@ func New(scraper *meteo365surf.Scraper) http.Handler {
 
 	mux.HandleFunc("GET /", handleIndex())
 	mux.HandleFunc("GET /search", handleSearch(scraper))
-	mux.HandleFunc("GET /spots/{name}", handleSpot(scraper))
+	mux.HandleFunc("GET /forecasts/{break_name}", handleForecast(scraper))
 
 	return mux
 }
@@ -64,11 +64,11 @@ func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	}
 }
 
-func handleSpot(scraper *meteo365surf.Scraper) http.HandlerFunc {
+func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var props ui.SpotPageProps
+		var props ui.ForecastPageProps
 
-		name := strings.TrimSpace(r.PathValue("name"))
+		name := strings.TrimSpace(r.PathValue("break_name"))
 
 		slug, err := scraper.BreakSlug(name)
 		if err != nil {
@@ -105,7 +105,7 @@ func handleSpot(scraper *meteo365surf.Scraper) http.HandlerFunc {
 
 		buf := new(bytes.Buffer)
 
-		err = ui.SpotPage(props).Render(buf)
+		err = ui.ForecastPage(props).Render(buf)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
