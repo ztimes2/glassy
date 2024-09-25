@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
 	"github.com/ztimes2/surf-forecast/internal/ui"
@@ -61,9 +62,8 @@ func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 			return
 		}
 
+		cacheResponse(w, time.Hour)
 		_, _ = w.Write(buf.Bytes())
-
-		// TODO add caching
 	}
 }
 
@@ -108,8 +108,12 @@ func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 			return
 		}
 
+		cacheResponse(w, time.Hour)
 		_, _ = w.Write(buf.Bytes())
-
-		// TODO add caching
 	}
+}
+
+func cacheResponse(w http.ResponseWriter, d time.Duration) {
+	age := strconv.Itoa(int(d.Seconds()))
+	w.Header().Set("Cache-Control", "max-age="+age)
 }
