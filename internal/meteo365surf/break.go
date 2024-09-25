@@ -21,7 +21,7 @@ var (
 )
 
 // SearchBreaks searches for surf breaks using a text query.
-func (s *Scraper) SearchBreaks(query string) ([]Break, error) {
+func (s *Scraper) SearchBreaks(query string) ([]BreakSearchResult, error) {
 	u, err := url.Parse(s.baseURL + "/breaks/ac_location_name")
 	if err != nil {
 		return nil, fmt.Errorf("could not prepare request url: %w", err)
@@ -65,7 +65,7 @@ func (s *Scraper) SearchBreaks(query string) ([]Break, error) {
 		return nil, fmt.Errorf("could not unmarshal response body: %w", err)
 	}
 
-	var breaks []Break
+	var breaks []BreakSearchResult
 	for _, result := range results {
 		if len(result) != 3 {
 			return nil, fmt.Errorf("unexpected search result: %q", result)
@@ -81,11 +81,13 @@ func (s *Scraper) SearchBreaks(query string) ([]Break, error) {
 		//
 		// Therefore, let's ignore results that have non-numerical IDs since we are only
 		// interested in returning surf breaks.
-		if _, err := strconv.Atoi(result[0]); err != nil {
+		id, err := strconv.Atoi(result[0])
+		if err != nil {
 			continue
 		}
 
-		breaks = append(breaks, Break{
+		breaks = append(breaks, BreakSearchResult{
+			ID:          id,
 			Name:        result[1],
 			CountryName: result[2],
 		})
@@ -94,45 +96,20 @@ func (s *Scraper) SearchBreaks(query string) ([]Break, error) {
 	return breaks, nil
 }
 
-// Break holds information about a surf break.
-type Break struct {
+// BreakSearchResult holds information about a result of searching for surf breaks.
+type BreakSearchResult struct {
+	ID          int
 	Name        string
 	CountryName string
 }
 
-// BreakSlug returns a surf break's slug by its name. It returns ErrBreakNotFound for non-existent surf breaks.
-func (s *Scraper) BreakSlug(name string) (string, error) {
-	resp, err := s.client.PostForm(s.baseURL+"/breaks/catch", url.Values{
-		"query": []string{name},
-	})
+// Break returns a surf break by its ID. It returns ErrBreakNotFound for non-existent surf breaks.
+func (s *Scraper) Break(id int) (Break, error) {
+	slug, err := s.breakSlug(id)
 	if err != nil {
-		return "", fmt.Errorf("could not send request: %w", err)
+		return Break{}, fmt.Errorf("could not fetch slug of surf break: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusFound {
-		return "", fmt.Errorf("received response with %d status code", resp.StatusCode)
-	}
-
-	redirectURL, err := url.Parse(resp.Header.Get("Location"))
-	if err != nil {
-		return "", fmt.Errorf("could not parse redirect url: %w", err)
-	}
-
-	path, ok := strings.CutPrefix(redirectURL.Path, "/breaks/")
-	if !ok {
-		return "", ErrBreakNotFound
-	}
-
-	parts := strings.Split(path, "/forecasts")
-	if len(parts) != 2 {
-		return "", errors.New("unexpected redirect url format")
-	}
-
-	return parts[0], nil
-}
-
-// Break returns a surf break by its slug. It returns ErrBreakNotFound for non-existent surf breaks.
-func (s *Scraper) Break(slug string) (Break, error) {
 	path := "/breaks/" + slug
 
 	req, err := http.NewRequest(http.MethodGet, s.baseURL+path, nil)
@@ -163,7 +140,49 @@ func (s *Scraper) Break(slug string) (Break, error) {
 		return Break{}, fmt.Errorf("could not scrape surf break: %w", err)
 	}
 
+	b.ID = id
+	b.Slug = slug
+
 	return b, nil
+}
+
+// Break holds information about a surf break.
+type Break struct {
+	ID          int
+	Slug        string
+	Name        string
+	CountryName string
+}
+
+// breakSlug returns a surf break's slug by its ID. It returns ErrBreakNotFound for non-existent surf breaks.
+func (s *Scraper) breakSlug(id int) (string, error) {
+	resp, err := s.client.PostForm(s.baseURL+"/breaks/catch", url.Values{
+		"loc_id": []string{strconv.Itoa(id)},
+	})
+	if err != nil {
+		return "", fmt.Errorf("could not send request: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusFound {
+		return "", fmt.Errorf("received response with %d status code", resp.StatusCode)
+	}
+
+	redirectURL, err := url.Parse(resp.Header.Get("Location"))
+	if err != nil {
+		return "", fmt.Errorf("could not parse redirect url: %w", err)
+	}
+
+	path, ok := strings.CutPrefix(redirectURL.Path, "/breaks/")
+	if !ok {
+		return "", ErrBreakNotFound
+	}
+
+	parts := strings.Split(path, "/forecasts")
+	if len(parts) != 2 {
+		return "", errors.New("unexpected redirect url format")
+	}
+
+	return parts[0], nil
 }
 
 func scrapeSurfBreak(n *html.Node) (Break, error) {

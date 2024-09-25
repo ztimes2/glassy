@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strconv"
+
 	. "github.com/maragudk/gomponents"
 	hx "github.com/maragudk/gomponents-htmx"
 	. "github.com/maragudk/gomponents/components"
@@ -92,10 +94,10 @@ func SearchPage(props SearchPageProps) Node {
 								Div(Class("col")),
 								Div(
 									Class("col col-12 col-md-8 col-lg-5 px-3 pt-2 list-group list-group-flush"),
-									Group(Map(props.Breaks, func(b meteo365surf.Break) Node {
+									Group(Map(props.Breaks, func(b meteo365surf.BreakSearchResult) Node {
 										return A(
 											Class("list-group-item list-group-item-action py-2"),
-											Href("/forecasts/"+b.Name),
+											Href("/forecasts/"+strconv.Itoa(b.ID)),
 											H6(
 												Class("mb-0 fs-6"),
 												Text(b.Name),
@@ -127,5 +129,5 @@ func SearchPage(props SearchPageProps) Node {
 // SearchPageProps holds data needed for rendering the search page.
 type SearchPageProps struct {
 	SearchQuery string
-	Breaks      []meteo365surf.Break
+	Breaks      []meteo365surf.BreakSearchResult
 }

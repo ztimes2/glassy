@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
@@ -16,7 +17,7 @@ func New(scraper *meteo365surf.Scraper) http.Handler {
 
 	mux.HandleFunc("GET /", handleIndex())
 	mux.HandleFunc("GET /search", handleSearch(scraper))
-	mux.HandleFunc("GET /forecasts/{break_name}", handleForecast(scraper))
+	mux.HandleFunc("GET /forecasts/{break_id}", handleForecast(scraper))
 
 	return mux
 }
@@ -35,25 +36,27 @@ func handleIndex() http.HandlerFunc {
 
 func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var props ui.SearchPageProps
+		var (
+			breaks []meteo365surf.BreakSearchResult
+			err    error
+		)
 
-		urlQuery := r.URL.Query()
-
-		props.SearchQuery = strings.TrimSpace(urlQuery.Get("q"))
-		if props.SearchQuery != "" {
-			breaks, err := scraper.SearchBreaks(props.SearchQuery)
+		query := strings.TrimSpace(r.URL.Query().Get("q"))
+		if query != "" {
+			breaks, err = scraper.SearchBreaks(query)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-
-			props.Breaks = breaks
 		}
 
-		buf := new(bytes.Buffer)
+		page := ui.SearchPage(ui.SearchPageProps{
+			SearchQuery: query,
+			Breaks:      breaks,
+		})
 
-		err := ui.SearchPage(props).Render(buf)
-		if err != nil {
+		buf := new(bytes.Buffer)
+		if err := page.Render(buf); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -66,11 +69,13 @@ func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 
 func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var props ui.ForecastPageProps
+		id, err := strconv.Atoi(strings.TrimSpace(r.PathValue("break_id")))
+		if err != nil {
+			http.Error(w, "invalid break id", http.StatusBadRequest)
+			return
+		}
 
-		name := strings.TrimSpace(r.PathValue("break_name"))
-
-		slug, err := scraper.BreakSlug(name)
+		brk, err := scraper.Break(id)
 		if err != nil {
 			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
 				http.NotFound(w, r)
@@ -81,7 +86,7 @@ func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 			return
 		}
 
-		props.Break, err = scraper.Break(slug)
+		iss, err := scraper.LatestForecastIssue(brk.Slug)
 		if err != nil {
 			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
 				http.NotFound(w, r)
@@ -92,21 +97,13 @@ func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 			return
 		}
 
-		props.ForecastIssue, err = scraper.LatestForecastIssue(slug)
-		if err != nil {
-			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
-				http.NotFound(w, r)
-				return
-			}
-
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		page := ui.ForecastPage(ui.ForecastPageProps{
+			Break:         brk,
+			ForecastIssue: iss,
+		})
 
 		buf := new(bytes.Buffer)
-
-		err = ui.ForecastPage(props).Render(buf)
-		if err != nil {
+		if err := page.Render(buf); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
