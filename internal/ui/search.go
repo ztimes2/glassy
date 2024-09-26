@@ -97,7 +97,7 @@ func SearchPage(props SearchPageProps) Node {
 									Group(Map(props.Breaks, func(b meteo365surf.BreakSearchResult) Node {
 										return A(
 											Class("list-group-item list-group-item-action py-2"),
-											Href("/forecasts/"+strconv.Itoa(b.ID)),
+											Href("/breaks/"+strconv.Itoa(b.ID)+"/forecasts/latest"),
 											H6(
 												Class("mb-0 fs-6"),
 												Text(b.Name),

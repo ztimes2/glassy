@@ -18,7 +18,7 @@ func New(scraper *meteo365surf.Scraper) http.Handler {
 
 	mux.HandleFunc("GET /", handleIndex())
 	mux.HandleFunc("GET /search", handleSearch(scraper))
-	mux.HandleFunc("GET /forecasts/{break_id}", handleForecast(scraper))
+	mux.HandleFunc("GET /breaks/{break_id}/forecasts/latest", handleLatestForecast(scraper))
 
 	return mux
 }
@@ -67,7 +67,7 @@ func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	}
 }
 
-func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
+func handleLatestForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(strings.TrimSpace(r.PathValue("break_id")))
 		if err != nil {
@@ -97,7 +97,7 @@ func handleForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 			return
 		}
 
-		page := ui.ForecastPage(ui.ForecastPageProps{
+		page := ui.LatestForecastPage(ui.LatestForecastPageProps{
 			Break:         brk,
 			ForecastIssue: iss,
 		})
