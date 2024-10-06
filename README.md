@@ -4,6 +4,8 @@ A website that aims to remove the clutter from traditional surf forecasts by pro
 
 In a few words, ***it's like [surf-forecast.com](https://surf-forecast.com) but lighter*** 🤙
 
+![Surfer Dude](docs/assets/surferdude.gif)
+
 ## Requirements
 
 - Go 1.23+
