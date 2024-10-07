@@ -437,22 +437,17 @@ func scrapeDays(n *html.Node) ([]int, error) {
 }
 
 func scrapeDay(n *html.Node) (int, error) {
-	nodes := htmlutil.Find(n, htmlutil.WithClassEqual("forecast-table__value"))
-	if len(nodes) != 2 {
-		return 0, errors.New("unexpected table values")
+	dayNameAttr, ok := htmlutil.Attribute(n, "data-day-name")
+	if !ok {
+		return 0, errors.New("could not find day name attribute")
 	}
 
-	dayTextNode := nodes[1].FirstChild
-	if dayTextNode == nil {
-		return 0, errors.New("could not find day text node")
-	}
-
-	day, err := parseDay(dayTextNode.Data)
+	t, err := time.Parse("Mon_02", dayNameAttr.Val)
 	if err != nil {
-		return 0, fmt.Errorf("could not parse day: %w", err)
+		return 0, fmt.Errorf("could not parse day name attribute: %q", dayNameAttr.Val)
 	}
 
-	return day, nil
+	return t.Day(), nil
 }
 
 func scrapeHours(n *html.Node) ([][]int, error) {
