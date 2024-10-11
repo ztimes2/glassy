@@ -13,7 +13,7 @@ func footer() Node {
 		Div(
 			Class("col col-10 col-md-12 col-lg-5 py-3"),
 			P(
-				Class("text-secondary fw-light text-center opacity-50"),
+				Class("text-secondary fw-light text-center opacity-50 lh-sm"),
 				Small(
 					Text("The location and forecast data is obtained from "),
 					A(
