@@ -10,7 +10,7 @@ In a few words, ***it's like [surf-forecast.com](https://surf-forecast.com) but 
 
 - Go 1.23+
 
-## Quick start
+## Getting started
 
 Clone the repository:
 ```
