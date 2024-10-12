@@ -2,7 +2,7 @@
 
 A website that aims to remove the clutter from traditional surf forecasts by providing surfers with a more streamlined way to check surf conditions at a glance. As of now, the location and forecast data is obtained from [surf-forecast.com](https://surf-forecast.com) via web scraping, it belongs to its original creators, and full credit is given to them.
 
-In a few words, ***it's like [surf-forecast.com](https://surf-forecast.com) but lighter*** 🤙
+In a few words, **it's like [surf-forecast.com](https://surf-forecast.com) but lighter** 🤙
 
 ![Surfer Dude](https://github.com/ztimes2/glassy.surf/blob/main/docs/assets/surferdude.gif?raw=true)
 
