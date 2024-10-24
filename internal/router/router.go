@@ -1,4 +1,4 @@
-package httphandler
+package router
 
 import (
 	"bytes"
@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ztimes2/glassy/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/meteo365"
 	"github.com/ztimes2/glassy/internal/ui"
 )
 
 // New initializes a new HTTP handler configured to serve the application's requests.
-func New(scraper *meteo365surf.Scraper) http.Handler {
+func New(scraper *meteo365.Scraper) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", handleIndex())
@@ -35,10 +35,10 @@ func handleIndex() http.HandlerFunc {
 	}
 }
 
-func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
+func handleSearch(scraper *meteo365.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			breaks []meteo365surf.BreakSearchResult
+			breaks []meteo365.BreakSearchResult
 			err    error
 		)
 
@@ -67,7 +67,7 @@ func handleSearch(scraper *meteo365surf.Scraper) http.HandlerFunc {
 	}
 }
 
-func handleLatestForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
+func handleLatestForecast(scraper *meteo365.Scraper) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(strings.TrimSpace(r.PathValue("break_id")))
 		if err != nil {
@@ -77,7 +77,7 @@ func handleLatestForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 
 		brk, err := scraper.Break(id)
 		if err != nil {
-			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
+			if errors.Is(err, meteo365.ErrBreakNotFound) {
 				http.NotFound(w, r)
 				return
 			}
@@ -88,7 +88,7 @@ func handleLatestForecast(scraper *meteo365surf.Scraper) http.HandlerFunc {
 
 		iss, err := scraper.LatestForecastIssue(brk.Slug)
 		if err != nil {
-			if errors.Is(err, meteo365surf.ErrBreakNotFound) {
+			if errors.Is(err, meteo365.ErrBreakNotFound) {
 				http.NotFound(w, r)
 				return
 			}

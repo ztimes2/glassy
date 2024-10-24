@@ -7,7 +7,7 @@ import (
 	hx "github.com/maragudk/gomponents-htmx"
 	. "github.com/maragudk/gomponents/components"
 	. "github.com/maragudk/gomponents/html"
-	"github.com/ztimes2/glassy/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/meteo365"
 )
 
 // SearchPage returns a Node that renders the search page.
@@ -94,7 +94,7 @@ func SearchPage(props SearchPageProps) Node {
 								Div(Class("col")),
 								Div(
 									Class("col col-12 col-md-8 col-lg-5 px-3 pt-2 list-group list-group-flush"),
-									Group(Map(props.Breaks, func(b meteo365surf.BreakSearchResult) Node {
+									Group(Map(props.Breaks, func(b meteo365.BreakSearchResult) Node {
 										return A(
 											Class("list-group-item list-group-item-action py-2"),
 											Href("/breaks/"+strconv.Itoa(b.ID)+"/forecasts/latest"),
@@ -129,5 +129,5 @@ func SearchPage(props SearchPageProps) Node {
 // SearchPageProps holds data needed for rendering the search page.
 type SearchPageProps struct {
 	SearchQuery string
-	Breaks      []meteo365surf.BreakSearchResult
+	Breaks      []meteo365.BreakSearchResult
 }

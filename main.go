@@ -3,16 +3,16 @@ package main
 import (
 	"net/http"
 
-	"github.com/ztimes2/glassy/internal/httphandler"
-	"github.com/ztimes2/glassy/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/meteo365"
+	"github.com/ztimes2/glassy/internal/router"
 )
 
 func main() {
-	scraper := meteo365surf.NewScraper()
+	scraper := meteo365.NewScraper()
 
-	h := httphandler.New(scraper)
+	r := router.New(scraper)
 
-	err := http.ListenAndServe(":8080", h)
+	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		panic(err)
 	}

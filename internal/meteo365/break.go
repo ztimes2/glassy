@@ -1,4 +1,4 @@
-package meteo365surf
+package meteo365
 
 import (
 	"bytes"
