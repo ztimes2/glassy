@@ -1,4 +1,4 @@
-module github.com/ztimes2/surf-forecast
+module github.com/ztimes2/glassy
 
 go 1.23.0
 

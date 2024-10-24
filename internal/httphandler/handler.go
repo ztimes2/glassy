@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
-	"github.com/ztimes2/surf-forecast/internal/ui"
+	"github.com/ztimes2/glassy/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/ui"
 )
 
 // New initializes a new HTTP handler configured to serve the application's requests.

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/tkuchiki/go-timezone"
-	"github.com/ztimes2/surf-forecast/internal/htmlutil"
+	"github.com/ztimes2/glassy/internal/htmlutil"
 	"golang.org/x/net/html"
 )
 

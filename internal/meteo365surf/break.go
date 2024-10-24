@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ztimes2/surf-forecast/internal/htmlutil"
+	"github.com/ztimes2/glassy/internal/htmlutil"
 	"golang.org/x/net/html"
 )
 

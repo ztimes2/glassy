@@ -7,7 +7,7 @@ import (
 	hx "github.com/maragudk/gomponents-htmx"
 	. "github.com/maragudk/gomponents/components"
 	. "github.com/maragudk/gomponents/html"
-	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/meteo365surf"
 )
 
 // SearchPage returns a Node that renders the search page.

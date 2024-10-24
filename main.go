@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/ztimes2/surf-forecast/internal/httphandler"
-	"github.com/ztimes2/surf-forecast/internal/meteo365surf"
+	"github.com/ztimes2/glassy/internal/httphandler"
+	"github.com/ztimes2/glassy/internal/meteo365surf"
 )
 
 func main() {
