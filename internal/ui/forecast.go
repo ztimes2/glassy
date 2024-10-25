@@ -16,6 +16,27 @@ func LatestForecastPage(props LatestForecastPageProps) Node {
 		Description: "It's like www.surf-forecast.com but lighter.",
 		Head: []Node{
 			Link(
+				Href("/apple-touch-icon.png"),
+				Rel("apple-touch-icon"),
+				Attr("sizes", "180x180"),
+			),
+			Link(
+				Href("/favicon-32x32.png"),
+				Rel("icon"),
+				Attr("sizes", "32x32"),
+				Attr("type", "image/png"),
+			),
+			Link(
+				Href("/favicon-16x16.png"),
+				Rel("icon"),
+				Attr("sizes", "16x16"),
+				Attr("type", "image/png"),
+			),
+			Link(
+				Href("/site.webmanifest"),
+				Rel("manifest"),
+			),
+			Link(
 				Href("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"),
 				Rel("stylesheet"),
 				Integrity("sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"),

@@ -3,6 +3,7 @@ package router
 import (
 	"bytes"
 	"errors"
+	"io/fs"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,25 +14,24 @@ import (
 )
 
 // New initializes a new HTTP handler configured to serve the application's requests.
-func New(scraper *meteo365.Scraper) http.Handler {
+func New(scraper *meteo365.Scraper, assets fs.FS) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /", handleIndex())
+	mux.HandleFunc("GET /", handleIndex(assets))
 	mux.HandleFunc("GET /search", handleSearch(scraper))
 	mux.HandleFunc("GET /breaks/{break_id}/forecasts/latest", handleLatestForecast(scraper))
 
 	return mux
 }
 
-func handleIndex() http.HandlerFunc {
+func handleIndex(assets fs.FS) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// The "/" pattern matches everything, so we need to check that we're at the root here.
-		if r.URL.Path != "/" {
-			http.NotFound(w, r)
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/search", http.StatusMovedPermanently)
 			return
 		}
 
-		http.Redirect(w, r, "/search", http.StatusMovedPermanently)
+		http.FileServerFS(assets).ServeHTTP(w, r)
 	}
 }
 

@@ -7,6 +7,7 @@ COPY go.mod .
 COPY go.sum .
 COPY internal/ internal
 COPY vendor/ vendor
+COPY static/ static
 
 RUN go build -mod vendor -o app *.go
 
