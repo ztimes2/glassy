@@ -1,4 +1,4 @@
-# [glassy.surf](https://glassy.surf)
+# glassy
 
 A website that aims to remove the clutter from traditional surf forecasts by providing surfers with a more streamlined way to check surf conditions at a glance. As of now, the location and forecast data is obtained from [surf-forecast.com](https://surf-forecast.com) via web scraping, it belongs to its original creators, and full credit is given to them.
 
