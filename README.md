@@ -14,7 +14,7 @@ In a few words, **it's like [surf-forecast.com](https://surf-forecast.com) but l
 
 Clone the repository:
 ```
-git clone https://github.com/ztimes2/glassy.surf && cd glassy.surf
+git clone https://github.com/ztimes2/glassy && cd glassy
 ```
 
 Run the server locally on [localhost:8080](http://localhost:8080):
