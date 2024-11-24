@@ -613,6 +613,13 @@ func scrapeRatings(n *html.Node) ([][]int, error) {
 }
 
 func parseRating(s string) (int, error) {
+	if s == "!" {
+		// For some forecasts the rating can be represented as "!" supposedly indicating
+		// rough conditions. Since we are using numerical rating representation, let's just
+		// use 11 as a special case.
+		return 11, nil
+	}
+
 	rating, err := strconv.Atoi(s)
 	if err != nil {
 		return 0, fmt.Errorf("not integer: %q", s)
